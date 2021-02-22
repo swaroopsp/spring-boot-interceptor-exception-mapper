@@ -12,13 +12,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-@ControllerAdvice
+import java.util.HashMap;
+import java.util.Map;
+
+@RestControllerAdvice
 //@Order(Ordered.HIGHEST_PRECEDENCE)
 @Slf4j
-public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+@EnableWebMvc
+public class RestResponseEntityExceptionHandler{
 
     @ExceptionHandler({ IllegalArgumentException.class })
     public ResponseEntity<Object> handleAccessDeniedException(
@@ -35,7 +43,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         log.error("Business Exception happened", ex);
         ServiceFault serviceFault = ServiceFault.builder().code("500").description("Server error").build();
         return new ResponseEntity<Object>(
-                serviceFault, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+                serviceFault, new HttpHeaders(), HttpStatus.UPGRADE_REQUIRED);
     }
 
     @ExceptionHandler({NonBusinessException.class })
@@ -46,4 +54,23 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return new ResponseEntity<Object>(
                 serviceFault, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<Object> noHandlerFoundException(
+            NoHandlerFoundException ex) {
+        log.error("Non business Exception happened", ex);
+        ServiceFault serviceFault = ServiceFault.builder().code("500").description("Server error").build();
+        return new ResponseEntity<Object>(
+                serviceFault, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
+//    @Override
+//    protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+//        Map<String,String> responseBody = new HashMap<>();
+//        responseBody.put("path",request.getContextPath());
+//        responseBody.put("message","The URL you have reached is not in service at this time (404).");
+//        return new ResponseEntity<Object>(responseBody,HttpStatus.NOT_FOUND);
+//    }
 }

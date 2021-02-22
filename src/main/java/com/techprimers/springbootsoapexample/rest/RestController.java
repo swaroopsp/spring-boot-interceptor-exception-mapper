@@ -22,7 +22,7 @@ public class RestController {
     private String string = null;
 
     @GetMapping("/{id}")
-    public String getSomething(@PathVariable("id") final String id) {
+    public String getSomething(@PathVariable("id") final String id) throws Exception{
         try {
             if (id.equals("1")) {
                 throw new IllegalArgumentException("Invalid Input");

@@ -2,15 +2,6 @@ package com.techprimers.springbootsoapexample.exception;
 
 import lombok.Builder;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ServiceFault", propOrder = {
-        "code",
-        "description"
-})
 @Builder
 public class ServiceFault {
 
